@@ -57,7 +57,7 @@ if [[ $SCELTA == "Aggiungi_nuovo_Proxy" ]];then
 elif [[ $SCELTA != "" ]]; then
 	source "./config/$SCELTA"
 #		if [[ $http_use_authentication && !$http_auth_user ]];then
-#			authproxy=`zenity --forms --title="Autenticazione richiesta Proxy Direzione Liguria" --text="Il proxy richiede un nome utente e una password" --add-entry="Nome utente:"  --add-password="Password:"`
+#			authproxy=`zenity --forms --title="Autenticazione richiesta" --text="Il proxy richiede un nome utente e una password" --add-entry="Nome utente:"  --add-password="Password:"`
 #			ARAU=(${authproxy//\|/ })
 #			http_auth_user=${ARAU[0]}
 #			http_auth_password=${ARAU[1]}
