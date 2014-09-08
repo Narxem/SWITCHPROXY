@@ -1,0 +1,12 @@
+#!/bin/bash
+ignore_hosts="['localhost', '127.0.0.0/8']"
+no_proxy='localhost,127.0.0.0/8'
+ftp_host=""
+ftp_port=""
+http_host=""
+http_port=""
+https_host=""
+https_port=""
+socks_host=""
+socks_port=""
+http_use_authentication="false"
