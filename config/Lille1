@@ -1,0 +1,12 @@
+#!/bin/bash
+http_host="proxy.univ-lille1.fr"
+http_port="3128"
+https_host="proxy.univ-lille1.fr"
+https_port="3128"
+ftp_host="proxy.univ-lille1.fr"
+ftp_port="0"
+socks_host="proxy.univ-lille1.fr"
+socks_port="0"
+http_use_authentication="false"
+ignore_hosts="['localhost','127.0.0.1']"
+#Description : Proxy de l'université Lille 1 (réseau LILLE1)
