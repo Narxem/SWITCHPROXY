@@ -6,6 +6,7 @@ Script permettant de modifier rapidement le proxy utilisé par le système
 Pour l'instant, modifie les configuration de :
 * Gnome
 * apt (apt-get et aptitude)
+* git
 
 ## Utilisation
 1. ./switch_proxy.sh

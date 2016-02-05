@@ -77,6 +77,11 @@ elif [[ $SCELTA != "" ]]; then
 	if [[ $http_host != "" ]]; then
 		gsettings set org.gnome.system.proxy.http enabled true
 		gsettings set org.gnome.system.proxy mode manual
+		#if git is in use
+		if [[ -f "/usr/bin/git" ]]; then
+			git config --global http.proxy ${http_host}:${http_port}
+			git config --global https.proxy ${https_host}:${https_port}
+		fi
 	else
 		gsettings set org.gnome.system.proxy.http enabled false
 		gsettings set org.gnome.system.proxy mode none
@@ -84,6 +89,10 @@ elif [[ $SCELTA != "" ]]; then
 		https_port="0";
 		ftp_port="0";
 		socks_port="0";
+		if [[ -f "/usr/bin/git" ]]; then
+			git config --global --unset http.proxy 
+			git config --global --unset https.proxy
+		fi
 	fi
 #	echo Set ignore hosts $ignore_hosts
 	gsettings set org.gnome.system.proxy ignore-hosts "$ignore_hosts"
@@ -112,7 +121,7 @@ elif [[ $SCELTA != "" ]]; then
 #	echo Set ignore socks port $socks_port
 	gsettings set org.gnome.system.proxy.socks port "$socks_port"
 
-	#if apt is in use
+		#if apt is in use
 	if [[ -d "/etc/apt/apt.conf.d" ]]; then
 		echo $SUDOPAS | sudo -S -- rm /etc/apt/apt.conf.d/02proxy
 		echo $SUDOPAS | sudo -S -- touch /etc/apt/apt.conf.d/02proxy
@@ -167,6 +176,8 @@ elif [[ $SCELTA != "" ]]; then
 		export NO_PROXY=''
 		export no_proxy=$NO_PROXY	
 	fi
+
+	echo "Modifications effectuées, pensez à relancer un nouveu terminal pour que tout soit pris en compte"
 else
 	echo "Aucune action effectuée"
 	exit 0
