@@ -9,9 +9,11 @@
 #	fi
 #fi
 
-SUDOPAS=`zenity --password --text="Inserisci la password di sudo" --title="Password richiesta"`
+#SUDOPAS=`zenity --password --text="Entrez votre mot de pass sudo" --title="Mot de passe sudo"`
+read -s -p "Mot de passe sudo :" SUDOPAS
+
 if [[ $SUDOPAS == "" ]];then
-	echo "devi specificare la password di sudo"
+	echo "Veuillez entrer votre mot de passe sudo"
 	exit 1
 fi
 
@@ -24,10 +26,11 @@ fi
 #	exit 1
 #fi
 
-SCELTA=`ls -A -B ./config/ | zenity --list --title="Selezione Proxy" --text="Scegli le impostazioni che preferisci" --hide-header --column="scelta"`
+SCELTA=`ls -A -B ./config/ | zenity --list --title="Selection du proxy" --text="Séléctionnez le proxy à utiliser" --hide-header --column="scelta" 2> /dev/null`
+echo #For newline printing
 
-if [[ $SCELTA == "Aggiungi_nuovo_Proxy" ]];then
-	SERVERS=`zenity --forms --title="Aggiungi un nuovo Proxy" --text="Inserisci i dati, lascia vuoto per non usare un tipo di proxy" --add-entry="Nome:" --add-entry="HTTP PROXY" --add-entry="HTTP PORTA" --add-entry="HTTPS PROXY" --add-entry="HTTPS PORTA" --add-entry="FTP PROXY" --add-entry="FTP PORTA" --add-entry="SOCKS PROXY" --add-entry="SOCKS PORTA"`
+if [[ $SCELTA == "Ajouter_nouveau_proxy" ]];then
+	SERVERS=`zenity --forms --title="Ajouter un nouveau proxy" --text="Entrez les données du proxy" --add-entry="Name:" --add-entry="Proxy HTTP" --add-entry="Port HTTP" --add-entry="Proxy HTTPS" --add-entry="Port HTTPS" --add-entry="Proxy FTP" --add-entry="Port FTP" --add-entry="Proxy SOCKS" --add-entry="Port SOCKS"`
 	ARPR=(${SERVERS//\|/ })
 	touch "./config/${ARPR[0]}"
 	echo "#!/bin/bash" > "./config/${ARPR[0]}"
@@ -39,21 +42,24 @@ if [[ $SCELTA == "Aggiungi_nuovo_Proxy" ]];then
 	echo "ftp_port=\"${ARPR[6]}\"" >> "./config/${ARPR[0]}"
 	echo "socks_host=\"${ARPR[7]}\"" >> "./config/${ARPR[0]}"
 	echo "socks_port=\"${ARPR[8]}\"" >> "./config/${ARPR[0]}"
-	zenity --question --title="Autenticazione proxy" --text="Il tuo proxy richiede nome utente e password?"
+	zenity --question --title="Authentification" --text="Le proxy demande-t-il une authentification ?"
 	if [[ $? == 0 ]] ; then
 		echo "http_use_authentication=\"true\"" >> "./config/${ARPR[0]}"
-		AUTHDATA=`zenity --forms --title="Autenticazione proxy" --text="Inserisci nome utente e password se vuoi salvarli, lascia bianco se vuoi inserirli ogni volta" --add-entry="Nome utente:"  --add-password="Password:"`
+		AUTHDATA=`zenity --forms --title="Authentification" --text="Vous pouvez sauvegarder maintenant votre login etvotre mot de passe, ou alors laisser blanc pour les demander à chaque fois" --add-entry="Login :"  --add-password="Mot de passe :"`
 		ARAT=(${AUTHDATA//\|/ })
 		echo "http_auth_user=\"${ARAT[0]}\"" >> "./config/${ARPR[0]}"
 		echo "http_auth_password=\"${ARAT[1]}\"" >> "./config/${ARPR[0]}"
 	else
 		echo "http_use_authentication=\"false\"" >> "./config/${ARPR[0]}"
 	fi
-	IGNORE=`zenity --entry --title="Ignore-host" --text="Inserisci gli indirizzi host da ignorare (lascia com'è se non sei sicuro)" --entry-text="localhost,127.0.0.0/8,192.0.0.0/8"`
-	echo "no_proxy=\"$IGNORE\"" >> "./config/${ARPR[0]}"
-	DESCR=`zenity --entry --title "Descrizione" --text="Se vuoi puoi inserire una descrizione nel file:"`
-	echo "#Descrizione: $DESCR" >> "./config/${ARPR[0]}"
+	IGNORE=`zenity --entry --title="Ignore-host" --text="Veuillez indiquer les hôtes pour lesquels le proxy doit être ignoré" --entry-text="localhost,127.0.0.1"`
+	echo "ignore_hosts=\"$IGNORE\"" >> "./config/${ARPR[0]}"
+	DESCR=`zenity --entry --title "Descrizione" --text="Vous pouvez entre une description à insérer dans le fichier"`
+	echo "#Description : $DESCR" >> "./config/${ARPR[0]}"
 	SCELTA=${ARPR[0]}
+
+
+
 elif [[ $SCELTA != "" ]]; then
 	source "./config/$SCELTA"
 #		if [[ $http_use_authentication && !$http_auth_user ]];then
@@ -79,19 +85,33 @@ elif [[ $SCELTA != "" ]]; then
 		ftp_port="0";
 		socks_port="0";
 	fi
+#	echo Set ignore hosts $ignore_hosts
 	gsettings set org.gnome.system.proxy ignore-hosts "$ignore_hosts"
+#	echo Set use same proxy
 	gsettings set org.gnome.system.proxy use-same-proxy false
+#	echo Set http host $http_host
 	gsettings set org.gnome.system.proxy.http host "$http_host"
+#	echo Set http port $http_port
 	gsettings set org.gnome.system.proxy.http port "$http_port"
+#	echo Set use authentication $http_use_authentication
 	gsettings set org.gnome.system.proxy.http use-authentication "$http_use_authentication"
+#	echo Set user $http_auth_user
 	gsettings set org.gnome.system.proxy.http authentication-user "$http_auth_user"
+#	echo Set password $http_auth_password
 	gsettings set org.gnome.system.proxy.http authentication-password "$http_auth_password"
+#	echo Set https host $https_host
 	gsettings set org.gnome.system.proxy.https host "$https_host"
+#	echo Set https port $https_port
 	gsettings set org.gnome.system.proxy.https port "$https_port"
+#	echo Set ftp host $ftp_host
 	gsettings set org.gnome.system.proxy.ftp host "$ftp_host"
+#	echo Set ftp port $ftp_port
 	gsettings set org.gnome.system.proxy.ftp port "$ftp_port"
+#	echo Set ignore socks host $socks_host
 	gsettings set org.gnome.system.proxy.socks host "$socks_host"
+#	echo Set ignore socks port $socks_port
 	gsettings set org.gnome.system.proxy.socks port "$socks_port"
+
 	#if apt is in use
 	if [[ -d "/etc/apt/apt.conf.d" ]]; then
 		echo $SUDOPAS | sudo -S -- rm /etc/apt/apt.conf.d/02proxy
@@ -110,6 +130,8 @@ elif [[ $SCELTA != "" ]]; then
 			echo "Acquire::socks::Proxy \"socks://${http_auth_user}:${http_auth_password}@${socks_host}:${socks_port}/\";" >> /etc/apt/apt.conf.d/02proxy
 		fi
 	fi
+	
+
 	if [[ $http_host != "" ]]; then
 		export HTTP_PROXY="http://${http_auth_user}:${http_auth_password}@${http_host}:${http_port}/"
 		export http_proxy=$HTTP_PROXY
@@ -146,6 +168,6 @@ elif [[ $SCELTA != "" ]]; then
 		export no_proxy=$NO_PROXY	
 	fi
 else
-	echo "non hai effettuato una scelta..."
+	echo "Aucune action effectuée"
 	exit 0
 fi
