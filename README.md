@@ -4,7 +4,7 @@
 Script permettant de modifier rapidement le proxy utilisé par le système
 
 Pour l'instant, modifie les configuration de :
-* Gnome
+* Gnome (et ses dérivés, comme MATE)
 * apt (apt-get et aptitude)
 * git
 
